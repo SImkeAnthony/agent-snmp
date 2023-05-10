@@ -1,4 +1,4 @@
-package be.heh;
+package be.heh.agentsnmp;
 
 public class Main {
     public static void main(String[] args) {
