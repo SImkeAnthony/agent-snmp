@@ -1,6 +1,5 @@
-package be.heh.agentsnmp.targetmib;
+package be.heh.agentsnmp.mib;
 
-import com.sun.source.tree.BinaryTree;
 import lombok.Getter;
 import lombok.Setter;
 import org.snmp4j.smi.OID;

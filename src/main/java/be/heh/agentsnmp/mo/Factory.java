@@ -11,11 +11,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-public class MOFactory implements MOInputFactory {
+public class Factory implements MOInputFactory {
     @Getter
     @Setter
     private String filePath;
-    public MOFactory(String filePath){
+    public Factory(String filePath){
         setFilePath(filePath);
     }
     @Override

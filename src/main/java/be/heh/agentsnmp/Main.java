@@ -14,8 +14,10 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        //SnmpAgent agent = new SnmpAgent("127.0.0.1",162,"moPersistenceFile.cfg","bootCounterFile.cfg");
-        //agent.start();
+        SnmpAgent agent = new SnmpAgent("127.0.0.1",162,"moPersistenceFile.cfg","bootCounterFile.cfg","configFile.cfg",new OctetString("public"));
+        agent.start();
+
+        /*
 
         ClassLoader classLoader = Main.class.getClassLoader();
         String configFile = "AgentConfig.properties";
@@ -59,5 +61,7 @@ public class Main {
         }catch (RuntimeException e){
             System.out.println("Runtime Error (main): "+e.getMessage());
         }
+
+         */
     }
 }
