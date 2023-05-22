@@ -1,27 +1,17 @@
 package be.heh.agentsnmp.agent;
 
 import be.heh.agentsnmp.listener.MOTableRowHandler;
-import be.heh.agentsnmp.mo.Factory;
-import be.heh.agentsnmp.mib.Target;
-import be.heh.agentsnmp.usm.User;
-import be.heh.agentsnmp.vacm.Access;
-import be.heh.agentsnmp.vacm.Group;
-import be.heh.agentsnmp.vacm.View;
 import lombok.Getter;
 import lombok.Setter;
-import org.snmp4j.MessageDispatcher;
-import org.snmp4j.MessageDispatcherImpl;
-import org.snmp4j.Snmp;
-import org.snmp4j.TransportMapping;
+import be.heh.agentsnmp.mib.Target;
+import org.snmp4j.*;
 import org.snmp4j.agent.AgentConfigManager;
 import org.snmp4j.agent.DefaultMOServer;
 import org.snmp4j.agent.DuplicateRegistrationException;
 import org.snmp4j.agent.MOServer;
 import org.snmp4j.agent.example.Modules;
 import org.snmp4j.agent.example.Snmp4jDemoMib;
-import org.snmp4j.agent.io.DefaultMOPersistenceProvider;
-import org.snmp4j.agent.io.ImportMode;
-import org.snmp4j.agent.io.MOInputFactory;
+import org.snmp4j.agent.io.*;
 import org.snmp4j.agent.io.prop.PropertyMOInput;
 import org.snmp4j.agent.mo.DefaultMOFactory;
 import org.snmp4j.agent.mo.MOAccessImpl;
@@ -30,297 +20,183 @@ import org.snmp4j.agent.mo.MOScalar;
 import org.snmp4j.agent.mo.snmp.StorageType;
 import org.snmp4j.agent.mo.snmp.TimeStamp;
 import org.snmp4j.agent.mo.snmp.TransportDomains;
-import org.snmp4j.agent.mo.snmp.VacmMIB;
-import org.snmp4j.agent.security.MutableVACM;
 import org.snmp4j.cfg.EngineBootsCounterFile;
+import org.snmp4j.mp.CounterSupport;
 import org.snmp4j.mp.MPv3;
-import org.snmp4j.security.*;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.smi.*;
 import org.snmp4j.transport.TransportMappings;
 import org.snmp4j.util.ThreadPool;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 public class SnmpAgent {
+
+    @Setter
+    @Getter
+    private AgentConfigManager agentConfigManager;
+
+    //manage files
+    @Setter
+    @Getter
+    private String engineBootsCounterFileName;
+    @Setter
+    @Getter
+    private EngineBootsCounterFile engineBootsCounterFile;
+    @Setter
+    @Getter
+    private String configFileName;
+    @Setter
+    @Getter
+    private String configMOFileName;
+
+    //SNMP variables
     @Getter
     @Setter
     private Snmp snmp;
     @Getter
     @Setter
-    private AgentConfigManager configurateur;
-    @Getter
-    @Setter
-    private OctetString localEngineId;
+    private Modules modules;
     @Getter
     @Setter
     private MOServer[] servers;
     @Getter
     @Setter
     private MOServer server;
-    @Getter
-    @Setter
-    private OctetString context;
-    @Getter
-    @Setter
-    VacmMIB vacm;
-    @Getter
-    @Setter
-    private USM usm;
-    @Getter
-    @Setter
-    private String moPersistenceFile;
-    @Getter
-    @Setter
-    private String bootCounterFile;
-    @Getter
-    @Setter
-    private String configFile;
-    @Getter
-    @Setter
-    private DefaultMOPersistenceProvider defaultMOPersistenceProvider;
-    @Getter
-    @Setter
-    private EngineBootsCounterFile engineBootsCounterFile;
-    @Getter
-    @Setter
-    private Factory factory;
-    @Getter
-    @Setter
-    private OctetString address;
-    @Getter
-    @Setter
-    private MessageDispatcher messageDispatcher;
-    @Getter
-    @Setter
-    private Modules modules;
+    public SnmpAgent(String engineBootsCounterFileName,String configFileName, String configMOFileName,List<String> listenAddresses,int listenPort,List<String> contexts) throws IOException {
 
-    @SuppressWarnings("unchecked")
-    public SnmpAgent(String ipAddress,int port,String moPersistenceFile,String bootCounterFile,String configFile,OctetString context) throws IOException {
-        setMoPersistenceFile(moPersistenceFile);
-        setBootCounterFile(bootCounterFile);
-        setConfigFile(configFile);
-        setContext(context);
-        setEngineBootsCounterFile(new EngineBootsCounterFile(new File(getBootCounterFile())));
-        setAddress(new OctetString(new UdpAddress(ipAddress+"/"+port).getValue()));
-        initMOServer();
-        System.out.println("Starting initialize SNMP...");
-        TransportMapping<? extends Address> tm = TransportMappings.getInstance().createTransportMapping(GenericAddress.parse("udp:"+ipAddress+"/"+port));
-        setMessageDispatcher(new MessageDispatcherImpl());
+        //init snmp
         setSnmp(new Snmp());
-        getSnmp().addTransportMapping(tm);
-        getMessageDispatcher().addTransportMapping(tm);
-        setLocalEngineId(new OctetString(MPv3.createLocalEngineID()));
-        System.out.println("End initialize SNMP");
-        initVacm();
-        initUSM();
-        System.out.println("Starting initialize Configurateur...");
-        setDefaultMOPersistenceProvider(new DefaultMOPersistenceProvider(getServers(),getMoPersistenceFile()));
-        setFactory(new Factory(getMoPersistenceFile()));
-        setConfigurateur(new AgentConfigManager(
-                getLocalEngineId(),
+
+        //initialize file
+        initFile(engineBootsCounterFileName,configFileName,configMOFileName);
+
+        //create variable needed
+        OctetString engineId = getEngineBootsCounterFile().getEngineId(new OctetString(MPv3.createLocalEngineID()));
+        setServer(new DefaultMOServer());
+        for(String context:contexts){
+            getServer().addContext(new OctetString(context));
+        }
+        setServers(new MOServer[]{getServer()});
+
+        //initialize transport
+        initTransport(listenAddresses,listenPort);
+
+        //initialize agent configurator manager
+        System.out.println("Initialize agent configurator manager ...");
+        setAgentConfigManager(new AgentConfigManager(
+                engineId,
                 getSnmp().getMessageDispatcher(),
-                getVacm(),
+                null,
                 getServers(),
-                ThreadPool.create("poolRequest", 10),
-                createMOFactory(),
-                getDefaultMOPersistenceProvider(),
+                ThreadPool.create("poolRequest",10),
+                createMOInputFactory(ImportMode.restoreChanges),
+                new DefaultMOPersistenceProvider(getServers(),getConfigMOFileName()),
                 getEngineBootsCounterFile()
         ));
-        System.out.println("End initialize Configurateur...");
+
+        //set variables agent configurator manager
+        getAgentConfigManager().setContext(
+                new SecurityModels(),
+                new SecurityProtocols(SecurityProtocols.SecurityProtocolSet.maxCompatibility),
+                new CounterSupport()
+        );
+
         getSnmp().listen();
-        System.out.println("SNMP listen...");
+        System.out.println("Snmp listen ...");
     }
 
-    private void initMOServer(){
-        System.out.println("Starting initialize MOServer...");
-        setServer(new DefaultMOServer());
-        getServer().addContext(getContext());
-        setServers(new MOServer[]{getServer()});
-        System.out.println("End initialize MOServer...");
+    private void initFile(String engineBootsCounterFileName,String configFileName,String configMOFileName) throws IOException {
+        try{
+            System.out.println("Initialize files ...");
+            setEngineBootsCounterFileName(engineBootsCounterFileName);
+            setEngineBootsCounterFile(new EngineBootsCounterFile(new File(getEngineBootsCounterFileName())));
+            setConfigFileName(configFileName);
+            File configFile = new File(getConfigFileName());
+            configFile.createNewFile();
+            setConfigMOFileName(configMOFileName);
+            File configMOFile = new File(configMOFileName);
+            configMOFile.createNewFile();
+        }catch (IOException e){
+            System.err.println("Error initFile : "+e.getMessage());
+        }
     }
 
-    private void initTargetMIB(){
-        System.out.println("Starting initialize TargetMIB...");
-        getConfigurateur().getSnmpTargetMIB().addDefaultTDomains();
+    private void initTransport(List<String> listenAddresses,int listenPort){
+        System.out.println("Initialize transport mapping ...");
+        try{
+            for(String ipAddress : listenAddresses){
+                Address address = GenericAddress.parse(String.format("udp:%s/%s",ipAddress , listenPort));
+                TransportMapping<? extends Address> transportMapping = TransportMappings.getInstance().createTransportMapping(address);
+                getSnmp().getMessageDispatcher().addTransportMapping(transportMapping);
+                getSnmp().addTransportMapping(transportMapping);
+            }
+        }catch (Exception e){
+            System.err.println("Error init transportMapping : "+e.getMessage());
+        }
+    }
+
+    private void initMIB(String ipAddress,int port){
+        System.out.println("Initialize MIB ...");
+        getAgentConfigManager().getSnmpTargetMIB().addDefaultTDomains();
+
+        //add default targetMIB
         Target defaultTarget = new Target(
-                new OctetString("notificationV3"),
+                new OctetString("default"),
                 TransportDomains.transportDomainUdpIpv4,
-                getAddress(),
+                new OctetString(new UdpAddress(ipAddress + "/" + port).getValue()),
                 1000,
                 5,
                 new OctetString("notify"),
                 new OctetString("v3Notify"),
                 StorageType.nonVolatile
         );
-        boolean addControl = addTargetMIB(defaultTarget);
-        if(!addControl){
-            System.err.println("Error: can't add default TargetMIB");
-        }
-        System.out.println("End initialize TargetMIB...");
-    }
+        addTargetMIB(defaultTarget);
 
-    private void initUSM(){
-        System.out.println("Starting initialize USM...");
-        setUsm(new USM(SecurityProtocols.getInstance(),getLocalEngineId(),0));
-        getUsm().setEngineDiscoveryEnabled(true);
-        SecurityModels.getInstance().addSecurityModel(getUsm());
-        getSnmp().getMessageDispatcher().addMessageProcessingModel(new MPv3(usm.getLocalEngineID().getValue()));
-        User defaultUser = new User(new OctetString("anthony"),AuthMD5.ID,new OctetString("Silver-Major-Knight-16"),PrivDES.ID,new OctetString("Silver-Major-Knight-16"));
-        boolean addControl = addUsmUser(defaultUser);
-        if(!addControl){
-            System.err.println("Error: can't add default UsmUser");
+        if (getModules() == null) {
+            setModules(new Modules(getMOFactory()));
+            getModules().getSnmp4jDemoMib().getSnmp4jDemoEntry()
+                    .addMOTableRowListener(new MOTableRowHandler(getModules(), getAgentConfigManager()));
+            ((TimeStamp) getModules().getSnmp4jDemoMib().getSnmp4jDemoEntry()
+                    .getColumn(Snmp4jDemoMib.idxSnmp4jDemoEntryCol4)).setSysUpTime(getAgentConfigManager().getSysUpTime());
         }
-        System.out.println("End initialize USM");
-    }
-    private void initVacm() {
-        setVacm(new VacmMIB(getServers()));
-        //add groups and
-        try {
-            System.out.println("Starting initialize Vacm...");
-            Group defaultGroup = new Group(SecurityModel.SECURITY_MODEL_USM,new OctetString("anthony"),new OctetString("public"), StorageType.nonVolatile);
-            boolean addControl = addGroupToVacm(defaultGroup);
-            if(!addControl){
-                System.out.println("Error: can't add default group");
-            }
-            Access defaultAccess = new Access(
-                    new OctetString("public"),
-                    new OctetString(),
-                    SecurityModel.SECURITY_MODEL_USM,
-                    SecurityLevel.AUTH_PRIV,
-                    MutableVACM.VACM_MATCH_EXACT,
-                    new OctetString("readViewAnthony"),
-                    new OctetString("writeViewAnthony"),
-                    new OctetString("notifyViewAnthony"),
-                    StorageType.nonVolatile
+
+        try{
+            getModules().registerMOs(getServer(),null);
+            MOScalar defaultScalar = new MOScalar(
+                    new OID("1.3.2.3.6.2.1.1.2"),
+                    MOAccessImpl.ACCESS_READ_CREATE,
+                    new OctetString("this is the a scalar registration")
             );
-            addControl = addAccessToVacm(defaultAccess);
-            if(!addControl){
-                System.err.println("Error: can't add default access");
+            boolean control = registerMIB(defaultScalar);
+            if(!control){
+                System.err.println("Error initMIB : false return of registerMIB");
             }
-            View defaultReadView = new View(
-                    new OctetString("readViewAnthony"),
-                    new OID("1"),
-                    new OctetString(),
-                    VacmMIB.vacmViewIncluded,
-                    StorageType.nonVolatile
-            );
-            View defaultWriteView = new View(
-                    new OctetString("writeViewAnthony"),
-                    new OID("1"),
-                    new OctetString(),
-                    VacmMIB.vacmViewIncluded,
-                    StorageType.nonVolatile
-            );
-            View defaultNotifyView = new View(
-                    new OctetString("notifyViewAnthony"),
-                    new OID("1"),
-                    new OctetString(),
-                    VacmMIB.vacmViewIncluded,
-                    StorageType.nonVolatile
-            );
-            addControl = addSubTreeViewToVacm(defaultReadView);
-            if(!addControl){
-                System.err.println("Error: can't add default read view");
-            }
-            addControl = addSubTreeViewToVacm(defaultWriteView);
-            if(!addControl){
-                System.err.println("Error: can't add default write view");
-            }
-            addControl = addSubTreeViewToVacm(defaultNotifyView);
-            if(!addControl){
-                System.err.println("Error: can't add default notify view");
-            }
-            System.out.println("End initialize Vacm");
-        }catch (RuntimeException e){
-            System.err.println("Runtime Error: "+e.getMessage());
-        }
-    }
-    private MOInputFactory createMOFactory(){
-        MOInputFactory moInputFactory;
-        final Properties props = new Properties();
-        if (getConfigFile() == null) {
-            System.err.println("Error: config file is null");
-            return null;
-        }
-        try {
-            InputStream configInputStream = new FileInputStream(getConfigFile());
-            props.load(configInputStream);
-        } catch (FileNotFoundException e) {
-            System.err.println("File IO Error: " + e.getMessage());
-            return null;
-        } catch (IOException e) {
-            System.err.println("IO Error: " + e.getMessage());
-            return null;
-        }
-        moInputFactory = () -> new PropertyMOInput(props, getConfigurateur(), ImportMode.replaceCreate);
-        return moInputFactory;
-    }
-    public boolean addGroupToVacm(Group groupVacm){
-        if(getVacm().hasSecurityToGroupMapping(groupVacm.getSecurityModel(),groupVacm.getSecurityName())){
-            return false;
-        }else{
-            getVacm().addGroup(groupVacm.getSecurityModel(),groupVacm.getSecurityName(),groupVacm.getGroupName(),groupVacm.getStorageType());
-            return true;
+        } catch (DuplicateRegistrationException e) {
+            System.err.println("Error initMIB : "+e.getMessage());
         }
     }
 
-    public boolean addAccessToVacm(Access access){
-        try {
-            getVacm().addAccess(
-                    access.getGroupName(),
-                    access.getPrefixContext(),
-                    access.getSecurityModel(),
-                    access.getSecurityLevel(),
-                    access.getMatchingPolicy(),
-                    access.getReadViewName(),
-                    access.getWriteViewName(),
-                    access.getNotifyViewName(),
-                    access.getStorageType()
-            );
+    private MOFactory getMOFactory() {
+        return DefaultMOFactory.getInstance();
+    }
+    public boolean registerMIB(MOScalar scalar) {
+        try{
+            System.out.println("Register MIB ...");
+            getServer().register(scalar,null);
             return true;
-        }catch (RuntimeException e){
-            System.err.println("Runtime Error: "+e.getMessage());
+        }catch (DuplicateRegistrationException e){
+            System.err.println("Error registerMIB : "+e.getMessage());
             return false;
         }
     }
 
-    public boolean addSubTreeViewToVacm(View view){
+    public boolean addTargetMIB(Target target) {
         try {
-            getVacm().addViewTreeFamily(
-                    view.getViewName(),
-                    view.getSubTree(),
-                    view.getMask(),
-                    view.getInclusionPolicy(),
-                    view.getStorageType()
-            );
-            return true;
-        }catch (RuntimeException e){
-            System.err.println("Runtime Error: "+e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean addUsmUser(User user){
-        try {
-            getUsm().addUser(new UsmUser(
-                    user.getSecurityName(),
-                    user.getAuthProtocol(),
-                    user.getAuthPassPhrase(),
-                    user.getPrivProtocol(),
-                    user.getPrivPassPhrase()
-            ));
-            return true;
-        }catch (RuntimeException e){
-            System.err.println("Runtime Error: "+e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean addTargetMIB(Target target){
-        try {
-            getConfigurateur().getSnmpTargetMIB().addTargetAddress(
+            getAgentConfigManager().getSnmpTargetMIB().addTargetAddress(
                     target.getName(),
                     target.getTransportDomain(),
                     target.getAddress(),
@@ -328,56 +204,42 @@ public class SnmpAgent {
                     target.getRetries(),
                     target.getTagList(),
                     target.getParameters(),
-                    target.getStorageType()
-            );
+                    target.getStorageType());
             return true;
-        }catch (RuntimeException e){
-            System.err.println("Runtime Error: "+e.getMessage());
+        } catch (RuntimeException e) {
+            System.err.println("Runtime Error: " + e.getMessage());
             return false;
         }
     }
-
-    private MOFactory getMOFactory() {
-        return DefaultMOFactory.getInstance();
-    }
-    public boolean registerMIB(){
-        System.out.println("Starting register MIB...");
-        if (getModules() == null) {
-            setModules(new Modules(getMOFactory()));
-            getModules().getSnmp4jDemoMib().getSnmp4jDemoEntry()
-                    .addMOTableRowListener(new MOTableRowHandler(getModules(), getConfigurateur()));
-            ((TimeStamp) getModules().getSnmp4jDemoMib().getSnmp4jDemoEntry()
-                    .getColumn(Snmp4jDemoMib.idxSnmp4jDemoEntryCol4)).setSysUpTime(getConfigurateur().getSysUpTime());
+    private MOInputFactory createMOInputFactory(ImportMode importMode) {
+        MOInputFactory configurationFactory;
+        InputStream configInputStream = SnmpAgent.class.getResourceAsStream(getConfigFileName());
+        final Properties props = new Properties();
+        if (getConfigFileName() != null) {
+            try {
+                configInputStream = new FileInputStream(getConfigFileName());
+            } catch (FileNotFoundException e) {
+                System.err.println("Error create MOInput factory : "+e.getMessage());
+            }
         }
         try {
-            System.out.println("Register MOScalar");
-            MOScalar scalar = new MOScalar(
-            new OID("1.3.2.3.6.2.1.1.2"),
-            MOAccessImpl.ACCESS_READ_CREATE,
-            new OctetString("this is the a scalar registration")
-            );
-            getServer().register(scalar,null);
-            getModules().registerMOs(getServer(), null);
-            System.out.println("End register MIB");
-            return true;
-        } catch (DuplicateRegistrationException e) {
-            System.err.println("Error: duplicate registration server " + Arrays.toString(getServer().getContexts()));
-            return false;
+            props.load(configInputStream);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
+        configurationFactory = () -> new PropertyMOInput(props, getAgentConfigManager(), importMode);
+        return configurationFactory;
     }
 
-    public void start(){
-        try {
-            getConfigurateur().initialize();
-            initTargetMIB();
-            getConfigurateur().setupProxyForwarder();
-            registerMIB();
-            getConfigurateur().registerShutdownHook();
-            System.out.println("Run...");
-            getConfigurateur().run();
-        }catch (RuntimeException e){
-            System.out.println("Runtime Error: "+e.getMessage());
-            getConfigurateur().shutdown();
+    public void run(String ipAddress,int port){
+        try{
+            getAgentConfigManager().initialize();
+            initMIB(ipAddress,port);
+            getAgentConfigManager().setupProxyForwarder();
+            getAgentConfigManager().registerShutdownHook();
+            getAgentConfigManager().run();
+        }catch (Exception e){
+            System.err.println("Error run : "+e.getMessage());
         }
     }
 }

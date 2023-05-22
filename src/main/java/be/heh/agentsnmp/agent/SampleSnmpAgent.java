@@ -1,6 +1,5 @@
 package be.heh.agentsnmp.agent;
 
-import be.heh.agentsnmp.listener.MOTableRowHandler;
 import lombok.Getter;
 import lombok.Setter;
 import org.snmp4j.MessageDispatcher;
@@ -193,8 +192,7 @@ public class SampleSnmpAgent {
         System.out.println("Starting register MIB...");
         if (getModules() == null) {
             setModules(new Modules(getMOFactory()));
-            getModules().getSnmp4jDemoMib().getSnmp4jDemoEntry()
-                    .addMOTableRowListener(new MOTableRowHandler(getModules(), getAgent()));
+            //getModules().getSnmp4jDemoMib().getSnmp4jDemoEntry().addMOTableRowListener(new MOTableRowHandler(getModules(), getAgent()));
             ((TimeStamp) getModules().getSnmp4jDemoMib().getSnmp4jDemoEntry()
                     .getColumn(Snmp4jDemoMib.idxSnmp4jDemoEntryCol4)).setSysUpTime(agent.getSysUpTime());
         }

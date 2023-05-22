@@ -65,7 +65,7 @@ public class MOTableRowHandler implements MOTableRowListener<Snmp4jDemoMib.Snmp4
         payload[0] = new VariableBinding(updateCount,counter);
         payload[1] = new VariableBinding(modifyType,type);
         getModules().getSnmp4jDemoMib().snmp4jDemoEvent(
-            getAgent().getNotificationOriginator(),
+                getAgent().getNotificationOriginator(),
                 new OctetString(),
                 payload
         );
