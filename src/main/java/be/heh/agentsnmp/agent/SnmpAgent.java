@@ -1,14 +1,12 @@
 package be.heh.agentsnmp.agent;
 
 import be.heh.agentsnmp.listener.MOTableRowHandler;
+import be.heh.agentsnmp.listener.RequestHandler;
 import lombok.Getter;
 import lombok.Setter;
 import be.heh.agentsnmp.mib.Target;
 import org.snmp4j.*;
-import org.snmp4j.agent.AgentConfigManager;
-import org.snmp4j.agent.DefaultMOServer;
-import org.snmp4j.agent.DuplicateRegistrationException;
-import org.snmp4j.agent.MOServer;
+import org.snmp4j.agent.*;
 import org.snmp4j.agent.example.Modules;
 import org.snmp4j.agent.example.Snmp4jDemoMib;
 import org.snmp4j.agent.io.*;
@@ -21,10 +19,11 @@ import org.snmp4j.agent.mo.snmp.StorageType;
 import org.snmp4j.agent.mo.snmp.TimeStamp;
 import org.snmp4j.agent.mo.snmp.TransportDomains;
 import org.snmp4j.cfg.EngineBootsCounterFile;
+import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.CounterSupport;
+import org.snmp4j.mp.MPv1;
 import org.snmp4j.mp.MPv3;
-import org.snmp4j.security.SecurityModels;
-import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.*;
 import org.snmp4j.smi.*;
 import org.snmp4j.transport.TransportMappings;
 import org.snmp4j.util.ThreadPool;
@@ -68,9 +67,6 @@ public class SnmpAgent {
     private MOServer server;
     public SnmpAgent(String engineBootsCounterFileName,String configFileName, String configMOFileName,List<String> listenAddresses,int listenPort,List<String> contexts) throws IOException {
 
-        //init snmp
-        setSnmp(new Snmp());
-
         //initialize file
         initFile(engineBootsCounterFileName,configFileName,configMOFileName);
 
@@ -81,6 +77,9 @@ public class SnmpAgent {
             getServer().addContext(new OctetString(context));
         }
         setServers(new MOServer[]{getServer()});
+
+        //init snmp
+        initSnmp(engineId,listenAddresses.get(0),listenPort,contexts.get(0).toString());
 
         //initialize transport
         initTransport(listenAddresses,listenPort);
@@ -97,16 +96,12 @@ public class SnmpAgent {
                 new DefaultMOPersistenceProvider(getServers(),getConfigMOFileName()),
                 getEngineBootsCounterFile()
         ));
-
         //set variables agent configurator manager
         getAgentConfigManager().setContext(
                 new SecurityModels(),
                 new SecurityProtocols(SecurityProtocols.SecurityProtocolSet.maxCompatibility),
                 new CounterSupport()
         );
-
-        getSnmp().listen();
-        System.out.println("Snmp listen ...");
     }
 
     private void initFile(String engineBootsCounterFileName,String configFileName,String configMOFileName) throws IOException {
@@ -125,15 +120,41 @@ public class SnmpAgent {
         }
     }
 
+    private void initSnmp(OctetString engineId,String ipAddress, int port,String community){
+        System.out.println("Initialize SNMP ....");
+        try{
+            setSnmp(new Snmp());
+            getSnmp().setMessageDispatcher(new MessageDispatcherImpl());
+            getSnmp().getMessageDispatcher().addMessageProcessingModel(new MPv1());
+            getSnmp().getMessageDispatcher().addMessageProcessingModel(new MPv3());
+
+            SecurityProtocols.getInstance().addAuthenticationProtocol(new AuthMD5());
+            SecurityProtocols.getInstance().addPrivacyProtocol(new PrivDES());
+            USM usm = new USM(SecurityProtocols.getInstance(), engineId, 0);
+            usm.setEngineDiscoveryEnabled(true);
+            SecurityModels.getInstance().addSecurityModel(usm);
+
+            getSnmp().addCommandResponder(new RequestHandler(getSnmp(),ipAddress,port,community));
+
+            getSnmp().listen();
+            System.out.println("Snmp listen ...");
+        }catch (Error e){
+            System.err.println("Error initialize SNMP : "+e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private void initTransport(List<String> listenAddresses,int listenPort){
         System.out.println("Initialize transport mapping ...");
         try{
             for(String ipAddress : listenAddresses){
                 Address address = GenericAddress.parse(String.format("udp:%s/%s",ipAddress , listenPort));
                 TransportMapping<? extends Address> transportMapping = TransportMappings.getInstance().createTransportMapping(address);
+                transportMapping.listen();
                 getSnmp().getMessageDispatcher().addTransportMapping(transportMapping);
                 getSnmp().addTransportMapping(transportMapping);
             }
+            getSnmp().listen();
         }catch (Exception e){
             System.err.println("Error init transportMapping : "+e.getMessage());
         }
@@ -154,7 +175,18 @@ public class SnmpAgent {
                 new OctetString("v3Notify"),
                 StorageType.nonVolatile
         );
+        Target community = new Target(
+                new OctetString("Silver-King-Rogue-16"),
+                TransportDomains.transportDomainUdpIpv4,
+                new OctetString(new UdpAddress(ipAddress + "/" + port).getValue()),
+                1000,
+                5,
+                null,
+                null,
+                StorageType.nonVolatile
+        );
         addTargetMIB(defaultTarget);
+        addTargetMIB(community);
 
         if (getModules() == null) {
             setModules(new Modules(getMOFactory()));

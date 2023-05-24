@@ -23,6 +23,5 @@ public class Main {
         if(listenAddresses.size() != 0){
             agent.run(listenAddresses.get(0),listenPort);
         }
-
     }
 }
