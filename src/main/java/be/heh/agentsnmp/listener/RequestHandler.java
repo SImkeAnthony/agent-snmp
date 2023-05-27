@@ -3,6 +3,7 @@ package be.heh.agentsnmp.listener;
 import lombok.Getter;
 import lombok.Setter;
 import org.snmp4j.*;
+import org.snmp4j.agent.AgentConfigManager;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.fluent.TargetBuilder;
 import org.snmp4j.mp.*;
@@ -22,18 +23,10 @@ public class RequestHandler implements CommandResponder {
     private Snmp snmp;
     @Getter
     @Setter
-    private String ipAddress;
-    @Getter
-    @Setter
-    private int port;
-    @Getter
-    @Setter
-    private String communityString;
-    public RequestHandler(Snmp snmp,String ipAddress, int port,String communityString){
+    private AgentConfigManager agentConfigManager;
+    public RequestHandler(Snmp snmp,AgentConfigManager manager){
         setSnmp(snmp);
-        setIpAddress(ipAddress);
-        setPort(port);
-        setCommunityString(communityString);
+        setAgentConfigManager(manager);
     }
     @Override
     public <A extends Address> void processPdu(CommandResponderEvent<A> event) {
@@ -49,12 +42,23 @@ public class RequestHandler implements CommandResponder {
         responsePdu.add(new VariableBinding(oid, new OctetString("votre_valeur")));
         System.out.println("Response pdu : "+responsePdu);
 
-        // Créez un ResponseEvent à partir de l'événement de commande
-        ResponseEvent<A> responseEvent = new ResponseEvent<>(this, event.getPeerAddress(), pdu, responsePdu,null);
+        //Create community
+        CommunityTarget target = new CommunityTarget();
+        target.setCommunity(new OctetString(event.getSecurityName()));
+        target.setAddress(event.getPeerAddress());
+        target.setRetries(3);
+        target.setTimeout(5000);
+        target.setVersion(SnmpConstants.version1);
 
         // Envoyez le ResponseEvent
         try {
-            // Envoyez la réponse
+            /*
+            * Send the response PDU
+            *
+            * Methode 1 : with MessageDispatcher
+            */
+            /*
+            ResponseEvent responseEvent = new ResponseEvent(event.getSource(),event.getPeerAddress(),pdu,responsePdu,null);
             getSnmp().getMessageDispatcher().returnResponsePdu(
                     event.getMessageProcessingModel(),
                     event.getSecurityModel(),
@@ -65,6 +69,14 @@ public class RequestHandler implements CommandResponder {
                     event.getStateReference(),
                     new StatusInformation()
             );
+            */
+
+            /*
+            * Send PDu response
+            *
+            * Methode 2 : with Snmp component directly
+            */
+            getSnmp().send(responsePdu,target);
         } catch (Exception e) {
             System.err.println("Error sending response : "+e.getMessage());
         }

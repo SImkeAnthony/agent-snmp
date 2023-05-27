@@ -25,6 +25,7 @@ import org.snmp4j.mp.MPv1;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.security.*;
 import org.snmp4j.smi.*;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.transport.TransportMappings;
 import org.snmp4j.util.ThreadPool;
 
@@ -79,7 +80,7 @@ public class SnmpAgent {
         setServers(new MOServer[]{getServer()});
 
         //init snmp
-        initSnmp(engineId,listenAddresses.get(0),listenPort,contexts.get(0).toString());
+        initSnmp(engineId);
 
         //initialize transport
         initTransport(listenAddresses,listenPort);
@@ -102,6 +103,7 @@ public class SnmpAgent {
                 new SecurityProtocols(SecurityProtocols.SecurityProtocolSet.maxCompatibility),
                 new CounterSupport()
         );
+        getSnmp().addCommandResponder(new RequestHandler(getSnmp(),getAgentConfigManager()));
     }
 
     private void initFile(String engineBootsCounterFileName,String configFileName,String configMOFileName) throws IOException {
@@ -120,10 +122,11 @@ public class SnmpAgent {
         }
     }
 
-    private void initSnmp(OctetString engineId,String ipAddress, int port,String community){
+    private void initSnmp(OctetString engineId){
         System.out.println("Initialize SNMP ....");
         try{
             setSnmp(new Snmp());
+            getSnmp().addTransportMapping(new DefaultUdpTransportMapping());
             getSnmp().setMessageDispatcher(new MessageDispatcherImpl());
             getSnmp().getMessageDispatcher().addMessageProcessingModel(new MPv1());
             getSnmp().getMessageDispatcher().addMessageProcessingModel(new MPv3());
@@ -133,8 +136,6 @@ public class SnmpAgent {
             USM usm = new USM(SecurityProtocols.getInstance(), engineId, 0);
             usm.setEngineDiscoveryEnabled(true);
             SecurityModels.getInstance().addSecurityModel(usm);
-
-            getSnmp().addCommandResponder(new RequestHandler(getSnmp(),ipAddress,port,community));
 
             getSnmp().listen();
             System.out.println("Snmp listen ...");
