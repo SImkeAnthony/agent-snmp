@@ -15,6 +15,11 @@ import org.snmp4j.transport.TransportMappings;
 import org.snmp4j.transport.TransportType;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class RequestHandler implements CommandResponder {
 
@@ -38,8 +43,9 @@ public class RequestHandler implements CommandResponder {
         responsePdu.setRequestID(pdu.getRequestID());
 
         // Ajoutez les variables de liaison (OID et valeur) à la réponse
-        OID oid = pdu.getAll().get(0).getOid();
-        responsePdu.add(new VariableBinding(oid, new OctetString("votre_valeur")));
+        for(VariableBinding variableBinding : getVariablesOIDs(pdu)){
+            responsePdu.add(variableBinding);
+        }
         System.out.println("Response pdu : "+responsePdu);
 
         //Create community
@@ -80,6 +86,17 @@ public class RequestHandler implements CommandResponder {
         } catch (Exception e) {
             System.err.println("Error sending response : "+e.getMessage());
         }
-
+    }
+    private Set<VariableBinding> getVariablesOIDs(PDU pdu) {
+        Set<VariableBinding> variableBindings = new HashSet<>();
+        List<? extends VariableBinding> workedList = pdu.getVariableBindings();
+        for(VariableBinding variableBinding : workedList){
+            Variable variable = getAgentConfigManager().getVariable(variableBinding.getOid().format());
+            System.out.println("variable : "+variable);
+            VariableBinding responseVariableBinding = new VariableBinding(variableBinding.getOid(),variable);
+            System.out.println("Response VariableBinding : "+responseVariableBinding.getOid()+" : "+responseVariableBinding.getVariable().toString());
+            variableBindings.add(responseVariableBinding);
+        }
+        return variableBindings;
     }
 }
