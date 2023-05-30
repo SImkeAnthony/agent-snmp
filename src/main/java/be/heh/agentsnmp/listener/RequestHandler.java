@@ -5,18 +5,8 @@ import lombok.Setter;
 import org.snmp4j.*;
 import org.snmp4j.agent.AgentConfigManager;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.fluent.TargetBuilder;
 import org.snmp4j.mp.*;
-import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.security.SecurityModel;
-import org.snmp4j.security.SecurityModels;
 import org.snmp4j.smi.*;
-import org.snmp4j.transport.TransportMappings;
-import org.snmp4j.transport.TransportType;
-
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,24 +19,55 @@ public class RequestHandler implements CommandResponder {
     @Getter
     @Setter
     private AgentConfigManager agentConfigManager;
+    @Getter
+    @Setter
+    private PDU responsePdu;
+    @Getter
+    @Setter
+    private ScopedPDU responseScopedPdu;
     public RequestHandler(Snmp snmp,AgentConfigManager manager){
         setSnmp(snmp);
         setAgentConfigManager(manager);
+        setResponsePdu(new PDU());
+        setResponseScopedPdu(new ScopedPDU());
     }
     @Override
     public <A extends Address> void processPdu(CommandResponderEvent<A> event) {
         PDU pdu = event.getPDU();
         System.out.println("received pdu : "+pdu);
+        switch (event.getPDU().getType()){
+            case PDU.GET :
+                getSnmpV1Handler(event);
+                break;
+            case PDU.GETNEXT:
+                break;
+            default:
+                System.out.println("Your request is not supported yet");
+        }
+
+    }
+    private Set<VariableBinding> getVariablesOIDs(PDU pdu) {
+        Set<VariableBinding> variableBindings = new HashSet<>();
+        List<? extends VariableBinding> workedList = pdu.getVariableBindings();
+        for(VariableBinding variableBinding : workedList){
+            Variable variable = getAgentConfigManager().getVariable(variableBinding.getOid().format());
+            VariableBinding responseVariableBinding = new VariableBinding(variableBinding.getOid(),variable);
+            variableBindings.add(responseVariableBinding);
+        }
+        return variableBindings;
+    }
+
+    private void getSnmpV1Handler(CommandResponderEvent event){
         // Traitez le PDU et générez la réponse souhaitée
-        PDU responsePdu = new PDU();
-        responsePdu.setType(PDU.RESPONSE);
-        responsePdu.setRequestID(pdu.getRequestID());
+        getResponsePdu().setType(PDU.RESPONSE);
+        getResponsePdu().setRequestID(event.getPDU().getRequestID());
 
         // Ajoutez les variables de liaison (OID et valeur) à la réponse
-        for(VariableBinding variableBinding : getVariablesOIDs(pdu)){
-            responsePdu.add(variableBinding);
+        Set<VariableBinding> workedSet = getVariablesOIDs(event.getPDU());
+        for(VariableBinding variableBinding : workedSet){
+            getResponsePdu().add(variableBinding);
         }
-        System.out.println("Response pdu : "+responsePdu);
+        System.out.println("Response pdu : "+getResponsePdu());
 
         //Create community
         CommunityTarget target = new CommunityTarget();
@@ -59,10 +80,10 @@ public class RequestHandler implements CommandResponder {
         // Envoyez le ResponseEvent
         try {
             /*
-            * Send the response PDU
-            *
-            * Methode 1 : with MessageDispatcher
-            */
+             * Send the response PDU
+             *
+             * Methode 1 : with MessageDispatcher
+             */
             /*
             ResponseEvent responseEvent = new ResponseEvent(event.getSource(),event.getPeerAddress(),pdu,responsePdu,null);
             getSnmp().getMessageDispatcher().returnResponsePdu(
@@ -78,25 +99,14 @@ public class RequestHandler implements CommandResponder {
             */
 
             /*
-            * Send PDu response
-            *
-            * Methode 2 : with Snmp component directly
-            */
-            getSnmp().send(responsePdu,target);
+             * Send PDu response
+             *
+             * Methode 2 : with Snmp component directly
+             */
+            getSnmp().send(getResponsePdu(),target);
+            getResponsePdu().clear();
         } catch (Exception e) {
             System.err.println("Error sending response : "+e.getMessage());
         }
-    }
-    private Set<VariableBinding> getVariablesOIDs(PDU pdu) {
-        Set<VariableBinding> variableBindings = new HashSet<>();
-        List<? extends VariableBinding> workedList = pdu.getVariableBindings();
-        for(VariableBinding variableBinding : workedList){
-            Variable variable = getAgentConfigManager().getVariable(variableBinding.getOid().format());
-            System.out.println("variable : "+variable);
-            VariableBinding responseVariableBinding = new VariableBinding(variableBinding.getOid(),variable);
-            System.out.println("Response VariableBinding : "+responseVariableBinding.getOid()+" : "+responseVariableBinding.getVariable().toString());
-            variableBindings.add(responseVariableBinding);
-        }
-        return variableBindings;
     }
 }

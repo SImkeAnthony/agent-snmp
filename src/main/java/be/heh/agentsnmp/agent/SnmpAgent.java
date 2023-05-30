@@ -199,15 +199,7 @@ public class SnmpAgent {
 
         try{
             getModules().registerMOs(getServer(),null);
-            MOScalar defaultScalar = new MOScalar(
-                    new OID("1.3.2.3.6.2.1.1.2"),
-                    MOAccessImpl.ACCESS_READ_CREATE,
-                    new OctetString("this is the a scalar registration")
-            );
-            boolean control = registerMIB(defaultScalar);
-            if(!control){
-                System.err.println("Error initMIB : false return of registerMIB");
-            }
+            //here you can register your MIB internally
         } catch (DuplicateRegistrationException e) {
             System.err.println("Error initMIB : "+e.getMessage());
         }
