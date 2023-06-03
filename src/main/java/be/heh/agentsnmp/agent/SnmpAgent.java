@@ -126,7 +126,7 @@ public class SnmpAgent {
         System.out.println("Initialize SNMP ....");
         try{
             setSnmp(new Snmp());
-            getSnmp().addTransportMapping(new DefaultUdpTransportMapping());
+            //getSnmp().addTransportMapping(new DefaultUdpTransportMapping());
             getSnmp().setMessageDispatcher(new MessageDispatcherImpl());
             getSnmp().getMessageDispatcher().addMessageProcessingModel(new MPv1());
             getSnmp().getMessageDispatcher().addMessageProcessingModel(new MPv3());
@@ -147,18 +147,24 @@ public class SnmpAgent {
     }
     private void initTransport(List<String> listenAddresses,int listenPort){
         System.out.println("Initialize transport mapping ...");
-        try{
+        try {
             for(String ipAddress : listenAddresses){
-                Address address = GenericAddress.parse(String.format("udp:%s/%s",ipAddress , listenPort));
-                TransportMapping<? extends Address> transportMapping = TransportMappings.getInstance().createTransportMapping(address);
-                transportMapping.listen();
-                getSnmp().getMessageDispatcher().addTransportMapping(transportMapping);
-                getSnmp().addTransportMapping(transportMapping);
+                try{
+                    Address address = GenericAddress.parse(String.format("udp:%s/%s",ipAddress , listenPort));
+                    TransportMapping<? extends Address> transportMapping = TransportMappings.getInstance().createTransportMapping(address);
+                    transportMapping.listen();
+                    getSnmp().getMessageDispatcher().addTransportMapping(transportMapping);
+                    getSnmp().addTransportMapping(transportMapping);
+                }catch (Exception e){
+                    System.err.println("Error init transportMapping : "+e.getMessage());
+                }
             }
             getSnmp().listen();
-        }catch (Exception e){
-            System.err.println("Error init transportMapping : "+e.getMessage());
+        }catch (IOException e){
+            System.err.println("Error init transport io error : "+e.getMessage());
         }
+
+
     }
 
     private void initMIB(String ipAddress,int port){

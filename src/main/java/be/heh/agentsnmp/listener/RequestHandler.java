@@ -44,7 +44,6 @@ public class RequestHandler implements CommandResponder {
             default:
                 System.out.println("Your request is not supported yet");
         }
-
     }
     private Set<VariableBinding> getVariablesOIDs(PDU pdu) {
         Set<VariableBinding> variableBindings = new HashSet<>();
@@ -70,12 +69,14 @@ public class RequestHandler implements CommandResponder {
         System.out.println("Response pdu : "+getResponsePdu());
 
         //Create community
+        /*
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString(event.getSecurityName()));
         target.setAddress(event.getPeerAddress());
         target.setRetries(3);
         target.setTimeout(5000);
         target.setVersion(SnmpConstants.version1);
+        */
 
         // Envoyez le ResponseEvent
         try {
@@ -84,8 +85,8 @@ public class RequestHandler implements CommandResponder {
              *
              * Methode 1 : with MessageDispatcher
              */
-            /*
-            ResponseEvent responseEvent = new ResponseEvent(event.getSource(),event.getPeerAddress(),pdu,responsePdu,null);
+
+            ResponseEvent responseEvent = new ResponseEvent(event.getSource(),event.getPeerAddress(),event.getPDU(),getResponsePdu(),null);
             getSnmp().getMessageDispatcher().returnResponsePdu(
                     event.getMessageProcessingModel(),
                     event.getSecurityModel(),
@@ -96,14 +97,13 @@ public class RequestHandler implements CommandResponder {
                     event.getStateReference(),
                     new StatusInformation()
             );
-            */
 
             /*
              * Send PDu response
              *
-             * Methode 2 : with Snmp component directly
+             * Methode 2 : with Snmp component directly not working on another NIC of loopback
              */
-            getSnmp().send(getResponsePdu(),target);
+            //getSnmp().send(getResponsePdu(),target);
             getResponsePdu().clear();
         } catch (Exception e) {
             System.err.println("Error sending response : "+e.getMessage());

@@ -9,6 +9,8 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.Variable;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,8 @@ public class Main {
         String configMOFileName = "configMOI.cfg";
         List<String> listenAddresses = new ArrayList<>();
         listenAddresses.add("127.0.0.1");
+        listenAddresses.add("192.168.1.3");
+        listenAddresses.add("192.168.0.9");
         int listenPort = 162;
         List<String> contexts = new ArrayList<>();
         contexts.add("public");
@@ -35,7 +39,7 @@ public class Main {
         }
     }
 
-    private static List<MOScalar> getScalarList(){
+    private static List<MOScalar> getScalarList() throws UnknownHostException {
         List<MOScalar> moScalars = new ArrayList<>();
         MOScalar scalarMacAddress = new MOScalar(
                 new OID("1.3.2.3.6.2.1.1.1"),
@@ -45,7 +49,7 @@ public class Main {
         MOScalar scalarIpAddress = new MOScalar(
                 new OID("1.3.2.3.6.2.1.2.1"),
                 MOAccessImpl.ACCESS_READ_ONLY,
-                new OctetString("192.168.0.10")
+                new OctetString(InetAddress.getByName("localhost").getHostAddress())
         );
         MOScalar scalarHostname = new MOScalar(
                 new OID("1.3.2.3.6.2.1.3.1"),
