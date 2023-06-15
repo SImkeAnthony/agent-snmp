@@ -17,12 +17,6 @@ configurations {
 repositories {
     mavenCentral()
     mavenLocal()
-    maven {
-        url 'https://repo.opennms.org/maven2/'
-    }
-    maven {
-        url 'https://repository.fit2cloud.com/content/groups/public/'
-    }
 }
 
 dependencies {
@@ -46,10 +40,9 @@ dependencies {
     implementation 'org.snmp4j:snmp4j-agentx:3.6.1'
     implementation 'org.snmp4j:snmp4j-unix-transport:1.0.2'
 
-    //MIBS
-    implementation 'net.percederberg.mibble:mibble:2.9.3'
-    implementation 'net.percederberg:mibble-parser:2.9.3'
-    implementation 'net.percederberg.mibble:mibble-mibs:2.9.3'
+    implementation 'org.javatuples:javatuples:1.2'
+
+    implementation 'org.json:json:20230227'
 }
 
 test {
