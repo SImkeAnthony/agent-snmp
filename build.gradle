@@ -17,28 +17,39 @@ configurations {
 repositories {
     mavenCentral()
     mavenLocal()
+    maven {
+        url 'https://repo.opennms.org/maven2/'
+    }
+    maven {
+        url 'https://repository.fit2cloud.com/content/groups/public/'
+    }
 }
 
 dependencies {
     implementation 'org.projectlombok:lombok:1.18.22'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    //testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
     //Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     // Test
-    testImplementation "org.testcontainers:junit-jupiter:1.16.0"
-    testImplementation 'junit:junit:4.13.2'
+    //testImplementation "org.testcontainers:junit-jupiter:1.16.0"
+    //testImplementation 'junit:junit:4.13.2'
 
     //SNMP
-    implementation 'org.snmp4j:snmp4j:3.7.4'
+    implementation 'org.snmp4j:snmp4j:3.7.7'
     implementation 'org.snmp4j:snmp4j-agent:3.6.6'
     implementation 'org.snmp4j:snmp4j-agent-db:3.6.4'
     implementation 'org.snmp4j:snmp4j-log4j:2.8.11'
     implementation 'org.snmp4j:snmp4j-agentx:3.6.1'
     implementation 'org.snmp4j:snmp4j-unix-transport:1.0.2'
+
+    //MIBS
+    implementation 'net.percederberg.mibble:mibble:2.9.3'
+    implementation 'net.percederberg:mibble-parser:2.9.3'
+    implementation 'net.percederberg.mibble:mibble-mibs:2.9.3'
 }
 
 test {

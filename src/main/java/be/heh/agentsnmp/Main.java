@@ -1,6 +1,7 @@
 package be.heh.agentsnmp;
 
 import be.heh.agentsnmp.agent.SnmpAgent;
+import be.heh.agentsnmp.mib.MibBrowser;
 import org.snmp4j.agent.example.Modules;
 import org.snmp4j.agent.mo.MOAccessImpl;
 import org.snmp4j.agent.mo.MOScalar;
@@ -8,6 +9,7 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.Variable;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -28,7 +30,6 @@ public class Main {
         List<String> contexts = new ArrayList<>();
         contexts.add("public");
         contexts.add("Silver-King-Rogue-16");
-
         SnmpAgent agent = new SnmpAgent(engineBootsCounterFileName,configFileName,configMOFileName,listenAddresses,listenPort,contexts);
         if(listenAddresses.size() != 0){
 
