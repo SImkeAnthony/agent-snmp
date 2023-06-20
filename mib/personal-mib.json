@@ -78,7 +78,7 @@
     "ifIndex":{
         "name":"ifIndex",
         "oid":"1.3.6.1.2.1.2.2.1.1",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"INTEGER",
         "maxaccess":"read-only",
@@ -87,7 +87,7 @@
     "ifDescription":{
         "name":"ifPhysAddress",
         "oid":"1.3.6.1.2.1.2.2.1.2",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"OCTET STRING",
         "maxaccess":"read-only",
@@ -96,7 +96,7 @@
     "ifPhysAddress":{
         "name":"ifPhysAddress",
         "oid":"1.3.6.1.2.1.2.2.1.2",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"OCTET STRING",
         "maxaccess":"read-only",
@@ -105,7 +105,7 @@
     "ifAddress":{
         "name":"ifAddress",
         "oid":"1.3.6.1.2.1.2.2.1.3",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"OCTET STRING",
         "maxaccess":"read-only",
@@ -145,7 +145,7 @@
     "mProcessorIndex":{
         "name":"mProcessorIndex",
         "oid":"1.3.6.1.2.1.3.2.1.1",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"INTEGER",
         "maxaccess":"read-only",
@@ -154,7 +154,7 @@
     "mProcessorRef":{
         "name":"mProcessorRef",
         "oid":"1.3.6.1.2.1.3.2.1.2",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"OCTET STRING",
         "maxaccess":"read-only",
@@ -163,7 +163,7 @@
     "mProcessorCore":{
         "name":"mProcessorCore",
         "oid":"1.3.6.1.2.1.3.2.1.1",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"INTEGER",
         "maxaccess":"read-only",
@@ -172,7 +172,7 @@
     "mProcessorVCore":{
         "name":"mProcessorVCore",
         "oid":"1.3.6.1.2.1.3.2.1.1",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"INTEGER",
         "maxaccess":"read-only",
@@ -181,7 +181,7 @@
     "mProcessorFreq":{
         "name":"mProcessorFreq",
         "oid":"1.3.6.1.2.1.3.2.1.1",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"DOUBLE",
         "maxaccess":"read-only",
@@ -219,7 +219,7 @@
     "mDiskIndex":{
         "name":"mDiskIndex",
         "oid":"1.3.6.1.2.1.3.4.1.1",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"INTEGER",
         "maxaccess":"read-only",
@@ -228,7 +228,7 @@
     "mDiskRef":{
         "name":"mDiskRef",
         "oid":"1.3.6.1.2.1.3.4.1.2",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"OCTET STRING",
         "maxaccess":"read-only",
@@ -237,7 +237,7 @@
     "mDiskAvailable":{
         "name":"mDiskAvailable",
         "oid":"1.3.6.1.2.1.3.4.1.3",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"DOUBLE",
         "maxaccess":"read-only",
@@ -246,7 +246,7 @@
     "mDiskUsed":{
         "name":"mDiskUsed",
         "oid":"1.3.6.1.2.1.3.4.1.4",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"DOUBLE",
         "maxaccess":"read-only",
@@ -283,7 +283,7 @@
     "mVStorageIndex":{
         "name":"mVStorageIndex",
         "oid":"1.3.6.1.2.1.3.6.1.1",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"INTEGER",
         "maxaccess":"read-only",
@@ -292,7 +292,7 @@
     "mVStorageRef":{
         "name":"mVStorageRef",
         "oid":"1.3.6.1.2.1.3.6.1.2",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"OCTET STRING",
         "maxaccess":"read-only",
@@ -301,7 +301,7 @@
     "mVStorageAvailable":{
         "name":"mVStorageAvailable",
         "oid":"1.3.6.1.2.1.3.6.1.3",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"DOUBLE",
         "maxaccess":"read-only",
@@ -310,7 +310,7 @@
     "mVStorageFreq":{
         "name":"mVStorageFreq",
         "oid":"1.3.6.1.2.1.3.6.1.4",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"DOUBLE",
         "maxaccess":"read-only",
@@ -319,7 +319,7 @@
     "mVStorageLatency":{
         "name":"mVStorageLatency",
         "oid":"1.3.6.1.2.1.3.6.1.5",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"DOUBLE",
         "maxaccess":"read-only",
@@ -357,7 +357,7 @@
     "sIndex":{
         "name":"sIndex",
         "oid":"1.3.6.1.2.1.4.2.1.1",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"INTEGER",
         "maxaccess":"read-only",
@@ -366,7 +366,7 @@
     "sName":{
         "name":"sName",
         "oid":"1.3.6.1.2.1.4.2.1.2",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"OCTET STRING",
         "maxaccess":"read-only",
@@ -375,7 +375,7 @@
     "sDescription":{
         "name":"sDescription",
         "oid":"1.3.6.1.2.1.4.2.1.3",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"OCTET STRING",
         "maxaccess":"read-only",
@@ -384,7 +384,7 @@
     "sPort":{
         "name":"sPort",
         "oid":"1.3.6.1.2.1.4.2.1.4",
-        "nodetype":"colomun",
+        "nodetype":"column",
         "class":"objecttype",
         "syntax":"OCTET STRING",
         "maxaccess":"read-only",

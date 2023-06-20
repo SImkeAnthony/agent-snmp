@@ -1,20 +1,7 @@
 package be.heh.agentsnmp;
 
 import be.heh.agentsnmp.agent.SnmpAgent;
-import be.heh.agentsnmp.mib.MibBrowser;
-import org.snmp4j.agent.example.Modules;
-import org.snmp4j.agent.mo.MOAccessImpl;
-import org.snmp4j.agent.mo.MOScalar;
-import org.snmp4j.agent.mo.MOTable;
-import org.snmp4j.agent.mo.MOTableRow;
-import org.snmp4j.smi.OID;
-import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.Variable;
-
-import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,49 +21,7 @@ public class Main {
         contexts.add("Silver-King-Rogue-16");
         SnmpAgent agent = new SnmpAgent(engineBootsCounterFileName,configFileName,configMOFileName,listenAddresses,listenPort,contexts);
         if(listenAddresses.size() != 0){
-
-            for(MOScalar scalar : getScalarList()){
-                agent.registerMIB(scalar);
-            }
             agent.run(listenAddresses.get(0),listenPort);
         }
-    }
-
-    private static List<MOScalar> getScalarList() throws UnknownHostException {
-        List<MOScalar> moScalars = new ArrayList<>();
-        MOScalar scalarMacAddress = new MOScalar(
-                new OID("1.3.2.3.6.2.1.1.1"),
-                MOAccessImpl.ACCESS_READ_ONLY,
-                new OctetString("AD-6D-56-E2-FF-23")
-        );
-        MOScalar scalarIpAddress = new MOScalar(
-                new OID("1.3.2.3.6.2.1.2.1"),
-                MOAccessImpl.ACCESS_READ_ONLY,
-                new OctetString(InetAddress.getByName("localhost").getHostAddress())
-        );
-        MOScalar scalarHostname = new MOScalar(
-                new OID("1.3.2.3.6.2.1.3.1"),
-                MOAccessImpl.ACCESS_READ_ONLY,
-                new OctetString("myLocalComputer")
-        );
-        MOScalar scalarOs = new MOScalar(
-                new OID("1.3.2.3.6.2.1.4.1"),
-                MOAccessImpl.ACCESS_READ_ONLY,
-                new OctetString("windows 10 education 22H20")
-        );
-        MOScalar scalarSnmp = new MOScalar(
-                new OID("1.3.2.3.6.2.1.5.1"),
-                MOAccessImpl.ACCESS_READ_ONLY,
-                new OctetString("true")
-        );
-
-        moScalars.add(scalarMacAddress);
-        moScalars.add(scalarIpAddress);
-        moScalars.add(scalarHostname);
-        moScalars.add(scalarOs);
-        moScalars.add(scalarSnmp);
-
-        return moScalars;
-
     }
 }

@@ -13,4 +13,5 @@ public interface Manager {
     public void initMOScalars();
     public void initMOTables();
     public void initEntriesRow();
+    public MOIdentity getIdentity();
 }

@@ -48,7 +48,7 @@ public class SysManager implements Manager{
     @Override
     public List<DefaultMOTable> getMOTables() {
         //any table to manage
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -72,6 +72,7 @@ public class SysManager implements Manager{
                             moVariable.getMoAccess(),
                             new OctetString(getHostname())
                     ));
+                    break;
                 }
                 case 2:{
                     moVariable.setMoScalar(new MOScalar(
@@ -79,9 +80,11 @@ public class SysManager implements Manager{
                             moVariable.getMoAccess(),
                             new OctetString(getOS())
                     ));
+                    break;
                 }
                 default:{
                     System.err.println(moVariable.getName()+" is no supported yet");
+                    break;
                 }
             }
         });
@@ -95,6 +98,11 @@ public class SysManager implements Manager{
     @Override
     public void initEntriesRow() {
         //any entry row to configure
+    }
+
+    @Override
+    public MOIdentity getIdentity() {
+        return getMoIdentity();
     }
 
     private void initMOMapping(){

@@ -80,6 +80,7 @@ public class IfManager implements Manager{
                             moVariable.getMoAccess(),
                             new OctetString(String.valueOf(getInterfaces().size()))
                     ));
+                    break;
                 }
                 default:{System.err.println(moVariable.getName()+" is not supported yet");}
             }
@@ -106,6 +107,12 @@ public class IfManager implements Manager{
             }
         });
     }
+
+    @Override
+    public MOIdentity getIdentity() {
+        return getMoIdentity();
+    }
+
     private void initMOMapping(){
         getMOMapping().put("ifNumber",1);
     }

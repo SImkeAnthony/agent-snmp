@@ -60,9 +60,9 @@ public class MaterialsManager implements Manager{
 
     private void initVolatileStorages() {
         int id = 1;
-        getVolatileStorages().add(new VolatileStorage((long)id,"Crucial RAM",16.0,3200.0,16.0));
+        getVolatileStorages().add(new VolatileStorage((long)id,"Crucial RAM 1",16.0,3200.0,16.0));
         id++;
-        getVolatileStorages().add(new VolatileStorage((long)id,"Crucial RAM",16.0,3200.0,16.0));
+        getVolatileStorages().add(new VolatileStorage((long)id,"Crucial RAM 2",16.0,3200.0,16.0));
     }
 
     private void initPersistentStorages() {
@@ -116,25 +116,28 @@ public class MaterialsManager implements Manager{
             int id = getMOMapping().get(moVariable.getName());
             switch (id){
                 case 1:{
-                    getMOScalars().add(new MOScalar(
+                    moVariable.setMoScalar(new MOScalar(
                             moVariable.getOid(),
                             moVariable.getMoAccess(),
                             new OctetString(String.valueOf(getProcessors().size()))
                     ));
+                    break;
                 }
                 case 2:{
-                    getMOScalars().add(new MOScalar(
+                    moVariable.setMoScalar(new MOScalar(
                             moVariable.getOid(),
                             moVariable.getMoAccess(),
                             new OctetString(String.valueOf(getPersistentStorages().size()))
                     ));
+                    break;
                 }
                 case 3:{
-                    getMOScalars().add(new MOScalar(
+                    moVariable.setMoScalar(new MOScalar(
                             moVariable.getOid(),
                             moVariable.getMoAccess(),
                             new OctetString(String.valueOf(getVolatileStorages().size()))
                     ));
+                    break;
                 }
                 default:{System.err.println(moVariable.getName()+" is not supported yet");}
             }
@@ -169,18 +172,26 @@ public class MaterialsManager implements Manager{
                     ));
                 });
             }else if(table.getID().equals(new OID(getMoIdentity().getOid().toString()+".6"))){ //-> volatile storage table
-                getVolatileStorages().parallelStream().forEach(vStorage->{
-                    table.addRow(new MOMVStorageEntry(
-                            new OID(vStorage.getId().toString()),
-                            vStorage.getReference(),
-                            vStorage.getAvailable(),
-                            vStorage.getFrequency(),
-                            vStorage.getLatency()
-                    ));
-                });
+                try{
+                    getVolatileStorages().parallelStream().forEach(vStorage->{
+                        table.addRow(new MOMVStorageEntry(
+                                new OID(vStorage.getId().toString()),
+                                vStorage.getReference(),
+                                vStorage.getAvailable(),
+                                vStorage.getFrequency(),
+                                vStorage.getLatency()
+                        ));
+                    });
+                }catch (NullPointerException e){}
+
             }else {
                 System.err.println("table "+table.getID().toString()+" is not supported yet");
             }
         });
+    }
+
+    @Override
+    public MOIdentity getIdentity() {
+        return getMoIdentity();
     }
 }

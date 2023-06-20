@@ -39,6 +39,7 @@ public class ServiceManager implements Manager {
     public ServiceManager() throws IOException {
         setMibBrowser(new MibBrowser(new File("mib/personal-mib.json")));
         initServices();
+        initMOMapping();
         initMOIdentity();
         initMOVariables();
         initMOScalars();
@@ -84,11 +85,12 @@ public class ServiceManager implements Manager {
             int id = getMOMapping().get(moVariable.getName());
             switch (id){
                 case 1:{
-                    getMOScalars().add(new MOScalar(
+                    moVariable.setMoScalar(new MOScalar(
                             moVariable.getOid(),
                             moVariable.getMoAccess(),
                             new OctetString(String.valueOf(getServices().size()))
                     ));
+                    break;
                 }
                 default:{System.err.println(moVariable.getName()+" is not supported yet");}
             }
@@ -115,5 +117,10 @@ public class ServiceManager implements Manager {
                 System.err.println("table "+table.getID().toString()+" is not supported yet");
             }
         });
+    }
+
+    @Override
+    public MOIdentity getIdentity() {
+        return getMoIdentity();
     }
 }

@@ -2,6 +2,7 @@ package be.heh.agentsnmp.agent;
 
 import be.heh.agentsnmp.listener.MOTableRowHandler;
 import be.heh.agentsnmp.listener.RequestHandler;
+import be.heh.agentsnmp.manager.*;
 import lombok.Getter;
 import lombok.Setter;
 import be.heh.agentsnmp.mib.Target;
@@ -25,6 +26,8 @@ import org.snmp4j.transport.TransportMappings;
 import org.snmp4j.util.ThreadPool;
 
 import java.io.*;
+import java.net.BindException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -61,10 +64,12 @@ public class SnmpAgent {
     @Getter
     @Setter
     private MOServer server;
+    @Getter
+    private List<Manager> managers = new ArrayList<>();
     public SnmpAgent(String engineBootsCounterFileName,String configFileName, String configMOFileName,List<String> listenAddresses,int listenPort,List<String> contexts) throws IOException {
-
-        //initialize file
+        //initialize file and manager
         initFile(engineBootsCounterFileName,configFileName,configMOFileName);
+        initManager();
 
         //create variable needed
         OctetString engineId = getEngineBootsCounterFile().getEngineId(new OctetString(MPv3.createLocalEngineID()));
@@ -101,6 +106,13 @@ public class SnmpAgent {
         getSnmp().addCommandResponder(new RequestHandler(getSnmp(),getAgentConfigManager()));
     }
 
+    private void initManager() throws IOException {
+        System.out.println("Initialize manager ...");
+        getManagers().add(new SysManager());
+        getManagers().add(new IfManager());
+        getManagers().add(new MaterialsManager());
+        getManagers().add(new ServiceManager());
+    }
     private void initFile(String engineBootsCounterFileName,String configFileName,String configMOFileName) throws IOException {
         try{
             System.out.println("Initialize files ...");
@@ -201,6 +213,14 @@ public class SnmpAgent {
         try{
             getModules().registerMOs(getServer(),null);
             //here you can register your MIB internally
+            getManagers().forEach(manager->{
+                if(!manager.getMOScalars().isEmpty()){manager.getMOScalars().forEach(moScalar -> {
+                    registerMIB(moScalar,moScalar.getScope().toString());
+                });}
+                if(!manager.getMOTables().isEmpty()){manager.getMOTables().forEach(defaultMOTable -> {
+                    registerMIB(defaultMOTable,defaultMOTable.getScope().toString());
+                });}
+            });
         } catch (DuplicateRegistrationException e) {
             System.err.println("Error initMIB : "+e.getMessage());
         }
@@ -209,13 +229,23 @@ public class SnmpAgent {
     private MOFactory getMOFactory() {
         return DefaultMOFactory.getInstance();
     }
-    public boolean registerMIB(MOScalar scalar) {
+    public boolean registerMIB(MOScalar scalar,String context) {
         try{
-            System.out.println("Register MIB ...");
-            getServer().register(scalar,null);
+            getServer().register(scalar,new OctetString(context));
+            System.out.println("Register scalar "+scalar);
             return true;
         }catch (DuplicateRegistrationException e){
-            System.err.println("Error registerMIB : "+e.getMessage());
+            System.err.println("Error registerMIB Scalar "+scalar+" : "+e.getMessage());
+            return false;
+        }
+    }
+    public boolean registerMIB(MOTable table,String context) {
+        try{
+            getServer().register(table,new OctetString(context));
+            System.out.println("Register Table "+table);
+            return true;
+        }catch (DuplicateRegistrationException e){
+            System.err.println("Error registerMIB table "+table+" : "+e.getMessage());
             return false;
         }
     }
@@ -265,7 +295,11 @@ public class SnmpAgent {
             getAgentConfigManager().registerShutdownHook();
             getAgentConfigManager().run();
         }catch (Exception e){
-            System.err.println("Error run : "+e.getMessage());
+            if(e.getMessage()==null){
+                System.err.println("Error run : generate by an other component");
+            }else{
+                System.err.println("Error run : "+e.getMessage());
+            }
         }
     }
 }

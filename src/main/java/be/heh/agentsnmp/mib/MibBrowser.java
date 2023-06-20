@@ -126,6 +126,7 @@ public class MibBrowser {
             JSONObject mo = getJsonObject().getJSONObject(keys.next());
             if(mo.has("class")){
                 if(mo.get("class").equals("objecttype") && mo.get("nodetype").equals("column") && mo.get("oid").toString().contains(oidIdentity.toString())){
+                    System.out.println("found a column for "+oidIdentity);
                     moMutableColumns.add(new MOMutableColumn(
                             colId,
                             getSyntax().get(mo.get("syntax").toString()),
