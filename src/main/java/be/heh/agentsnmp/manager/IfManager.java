@@ -101,6 +101,8 @@ public class IfManager implements Manager{
                             anInterface.getIpAddress()
                     ));
                 });
+            }else {
+                System.err.println("table "+table.getID().toString()+" is not supported yet");
             }
         });
     }
