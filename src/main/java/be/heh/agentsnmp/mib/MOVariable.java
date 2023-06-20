@@ -20,24 +20,27 @@ public class MOVariable {
     private MOAccess moAccess;
     @Getter
     @Setter
-    private OctetString value;
-    @Getter
-    @Setter
     private String description;
     @Getter
     @Setter
     MOScalar moScalar;
-    public MOVariable(String name,OID oid, MOAccess access, OctetString value,String description){
+    public MOVariable(String name,OID oid, MOAccess access,String description){
         setName(name);
         setOid(oid);
         setMoAccess(access);
-        setValue(value);
         setDescription(description);
+    }
+    public MOVariable(String name,OID oid, MOAccess access,String description,MOScalar moScalar){
+        setName(name);
+        setOid(oid);
+        setMoAccess(access);
+        setDescription(description);
+        setMoScalar(moScalar);
     }
 
     @Override
     public String toString(){
-        return "name : "+getName()+";oid : "+getOid()+";access : "+getMoAccess().toString()+";value : "+getValue()+";description : "+getDescription();
+        return "name : "+getName()+";oid : "+getOid()+";access : "+getMoAccess().toString()+";description : "+getDescription();
     }
 
     //perform method on MOScalar here

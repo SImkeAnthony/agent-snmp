@@ -1,0 +1,393 @@
+{
+    "system": {
+        "name": "system",
+        "oid": "1.3.6.1.2.1.1",
+        "class": "objectidentity"
+    },
+    "interfaces": {
+        "name": "interfaces",
+        "oid": "1.3.6.1.2.1.2",
+        "class": "objectidentity"
+    },
+    "materials":{
+        "name":"materials",
+        "oid" : "1.3.6.1.2.1.3",
+        "class":"objectidentity"
+    },
+    "services":{
+        "name":"services",
+        "oid":"1.3.6.1.2.1.4",
+        "class":"objectidentity"
+    },
+    "snmp":{
+        "name":"snmp",
+        "oid":"1.3.6.1.2.1.5",
+        "class":"objectidentity"
+    },
+
+    "sysHostname":{
+        "name":"sysHostname",
+        "oid":"1.3.6.1.2.1.1.1",
+        "nodetype":"scalar",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"This OID contains the full name of the host on network"
+    },
+    "sysOs":{
+        "name":"sysOs",
+        "oid":"1.3.6.1.2.1.1.2",
+        "nodetype":"scalar",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"This OID contains the textual inforamtions about the opérating system"
+    },
+
+    "ifNumber":{
+        "name":"ifNumber",
+        "oid":"1.3.6.1.2.1.2.1",
+        "nodetype":"scalar",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":""
+    },
+    "ifTable":{
+        "name":"ifTable",
+        "oid":"1.3.6.1.2.1.2.2",
+        "nodetype":"table",
+        "class":"objecttype",
+        "maxaccess":"not-accessible",
+        "description":"A table contains a list of interface. The number of interfaces is given by the pre-OID"
+    },
+    "ifEntry":{
+        "name":"ifEntry",
+        "oid":"1.3.6.1.2.1.2.2.1",
+        "nodetype":"row",
+        "class":"objecttype",
+        "maxaccess":"not-accessible",
+        "indices":[
+            {
+                "module":"personnal-mib",
+                "object":"ifIndex"
+            }
+        ],
+        "description":"Represents a entry as object of the table containing all interfaces of system"
+    },
+    "ifIndex":{
+        "name":"ifIndex",
+        "oid":"1.3.6.1.2.1.2.2.1.1",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":"It represents a index of an entry (interface) of the table. This number is in range between 1 to ifNumber"
+    },
+    "ifDescription":{
+        "name":"ifPhysAddress",
+        "oid":"1.3.6.1.2.1.2.2.1.2",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"A textual description of the interface (including constructor, id and reference)"
+    },
+    "ifPhysAddress":{
+        "name":"ifPhysAddress",
+        "oid":"1.3.6.1.2.1.2.2.1.2",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"A value of physical address on NIC"
+    },
+    "ifAddress":{
+        "name":"ifAddress",
+        "oid":"1.3.6.1.2.1.2.2.1.3",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"A value of address on local network"
+    },
+    "mProcessorNumber":{
+        "name":"mProcessorNumber",
+        "oid":"1.3.6.1.2.1.3.1",
+        "nodetype":"scalar",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":"A number that contains the number of processor available on the system"
+    },
+    "mProcessorTable":{
+        "name":"mProcessorTable",
+        "oid":"1.3.6.1.2.1.3.2",
+        "nodetype":"table",
+        "class":"objecttype",
+        "maxaccess":"not-accessible",
+        "description":"A table contains all informations about the processor"
+    },
+    "mProcessorEntry":{
+        "name":"mProcessorEntry",
+        "oid":"1.3.6.1.2.1.3.2.1",
+        "nodetype":"row",
+        "class":"objecttype",
+        "maxaccess":"not-accessible",
+        "indices":[
+            {
+                "module":"personnal-mib",
+                "object":"mProcessorIndex"
+            }
+        ],
+        "description":"This object represents a entry of the table of processor"
+    },
+    "mProcessorIndex":{
+        "name":"mProcessorIndex",
+        "oid":"1.3.6.1.2.1.3.2.1.1",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":"A unique number to identifier the processor in the table"
+    },
+    "mProcessorRef":{
+        "name":"mProcessorRef",
+        "oid":"1.3.6.1.2.1.3.2.1.2",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"The textual reference of the processor (including constructor,model,version,other...)"
+    },
+    "mProcessorCore":{
+        "name":"mProcessorCore",
+        "oid":"1.3.6.1.2.1.3.2.1.1",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":"A number contains the number of processor cores"
+    },
+    "mProcessorVCore":{
+        "name":"mProcessorVCore",
+        "oid":"1.3.6.1.2.1.3.2.1.1",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":"A number contains the number of virtual core (thread) making up the processor "
+    },
+    "mProcessorFreq":{
+        "name":"mProcessorFreq",
+        "oid":"1.3.6.1.2.1.3.2.1.1",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"DOUBLE",
+        "maxaccess":"read-only",
+        "description":"The base frequency of the processor"
+    },
+    "mDiskNumber":{
+        "name":"mDiskNumber",
+        "oid":"1.3.6.1.2.1.3.3",
+        "nodetype":"scalar",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":"A number that contains the number of disk available on the system"
+    },
+    "mDiskTable":{
+        "name":"mDiskTable",
+        "oid":"1.3.6.1.2.1.3.4",
+        "nodetype":"table",
+        "class":"objecttype",
+        "maxaccess":"not-accessible",
+        "description":"A Table that contains all disk installed on machine"
+    },
+    "mDiskEntry":{
+        "name":"mDiskEntry",
+        "oid":"1.3.6.1.2.1.3.4.1",
+        "nodetype":"row",
+        "class":"objecttype",
+        "maxaccess":"not-accessible",
+        "indices":[{
+            "module":"personnal-mib",
+            "object":"mDiskIndex"
+        }],
+        "description":"Represents an entry in the table of disk"
+    },
+    "mDiskIndex":{
+        "name":"mDiskIndex",
+        "oid":"1.3.6.1.2.1.3.4.1.1",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":"A number to identify the unique way a entry in the disk table"
+    },
+    "mDiskRef":{
+        "name":"mDiskRef",
+        "oid":"1.3.6.1.2.1.3.4.1.2",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"The reference of disk includind the constructor, the model and other informations about the disk"
+    },
+    "mDiskAvailable":{
+        "name":"mDiskAvailable",
+        "oid":"1.3.6.1.2.1.3.4.1.3",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"DOUBLE",
+        "maxaccess":"read-only",
+        "description":"The number that refer to the storage still available"
+    },
+    "mDiskUsed":{
+        "name":"mDiskUsed",
+        "oid":"1.3.6.1.2.1.3.4.1.4",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"DOUBLE",
+        "maxaccess":"read-only",
+        "description":"The number that refer to the storage used"
+    },
+    "mVStorageNumber":{
+        "name":"mVStorageNumber",
+        "oid":"1.3.6.1.2.1.3.5",
+        "nodetype":"scalar",
+        "class":"objecttype",
+        "maxaccess":"read-only",
+        "description":"A number that contains the number of volatile storage available on the system"
+    },
+    "mVStorageTable":{
+        "name":"mVStorageTable",
+        "oid":"1.3.6.1.2.1.3.6",
+        "nodetype":"table",
+        "class":"objecttype",
+        "maxaccess":"not-accessible",
+        "description":"A Table that contains all volatile storage such as RAM installed on machine"
+    },
+    "mVStorageEntry":{
+        "name":"mVStorageEntry",
+        "oid":"1.3.6.1.2.1.3.6.1",
+        "nodetype":"row",
+        "class":"objecttype",
+        "maxaccess":"not-accessible",
+        "indices":[{
+            "module":"personnal-mib",
+            "object":"mVStorageIndex"
+        }],
+        "description":"Represents an entry in the table of disk"
+    },
+    "mVStorageIndex":{
+        "name":"mVStorageIndex",
+        "oid":"1.3.6.1.2.1.3.6.1.1",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":"A number to identify the unique way a entry in the volatile storage table"
+    },
+    "mVStorageRef":{
+        "name":"mVStorageRef",
+        "oid":"1.3.6.1.2.1.3.6.1.2",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"The reference of the volatile storage can include the constructor, the model and other informations about this storage"
+    },
+    "mVStorageAvailable":{
+        "name":"mVStorageAvailable",
+        "oid":"1.3.6.1.2.1.3.6.1.3",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"DOUBLE",
+        "maxaccess":"read-only",
+        "description":"This number contains the entire volatile storage available (such as available RAM in GB)"
+    },
+    "mVStorageFreq":{
+        "name":"mVStorageFreq",
+        "oid":"1.3.6.1.2.1.3.6.1.4",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"DOUBLE",
+        "maxaccess":"read-only",
+        "description":"This number refer to the frequency of the volatile storage (in MHz)"
+    },
+    "mVStorageLatency":{
+        "name":"mVStorageLatency",
+        "oid":"1.3.6.1.2.1.3.6.1.5",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"DOUBLE",
+        "maxaccess":"read-only",
+        "description":"This number refer to the latency of the volatile storage (in MHz)"
+    },
+    "sNumber":{
+        "name":"sNumber",
+        "oid":"1.3.6.1.2.1.4.1",
+        "nodetype":"scalar",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":"A number that contains the number of service running on the system"
+    },
+    "sTable":{
+        "name":"sTable",
+        "oid":"1.3.6.1.2.1.4.2",
+        "nodetype":"table",
+        "class":"objecttype",
+        "maxaccess":"not-accessible",
+        "description":"A table contains a list of service offered by the system"
+    },
+    "sEntry":{
+        "name":"sEntry",
+        "oid":"1.3.6.1.2.1.4.2.1",
+        "nodetype":"row",
+        "class":"objecttype",
+        "maxaccess":"not-accessible",
+        "indices":[{
+            "module":"personnal-mib",
+            "object":"sIndex"
+        }],
+        "description":"An object representing an antry of the service table"
+    },
+    "sIndex":{
+        "name":"sIndex",
+        "oid":"1.3.6.1.2.1.4.2.1.1",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"INTEGER",
+        "maxaccess":"read-only",
+        "description":"A unique identifier to identify the entry in the table"
+    },
+    "sName":{
+        "name":"sName",
+        "oid":"1.3.6.1.2.1.4.2.1.2",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"A more user-friendly name for the service"
+    },
+    "sDescription":{
+        "name":"sDescription",
+        "oid":"1.3.6.1.2.1.4.2.1.3",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"This OID provide more informations about the service"
+    },
+    "sPort":{
+        "name":"sPort",
+        "oid":"1.3.6.1.2.1.4.2.1.4",
+        "nodetype":"colomun",
+        "class":"objecttype",
+        "syntax":"OCTET STRING",
+        "maxaccess":"read-only",
+        "description":"This chaine provide all port used by the service (empty if the service don't use any port)"
+    }
+}

@@ -5,6 +5,8 @@ import be.heh.agentsnmp.mib.MibBrowser;
 import org.snmp4j.agent.example.Modules;
 import org.snmp4j.agent.mo.MOAccessImpl;
 import org.snmp4j.agent.mo.MOScalar;
+import org.snmp4j.agent.mo.MOTable;
+import org.snmp4j.agent.mo.MOTableRow;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.Variable;

@@ -45,6 +45,7 @@ public class RequestHandler implements CommandResponder {
                 System.out.println("Your request is not supported yet");
         }
     }
+    //here get information of OID in the PDU request
     private Set<VariableBinding> getVariablesOIDs(PDU pdu) {
         Set<VariableBinding> variableBindings = new HashSet<>();
         List<? extends VariableBinding> workedList = pdu.getVariableBindings();
