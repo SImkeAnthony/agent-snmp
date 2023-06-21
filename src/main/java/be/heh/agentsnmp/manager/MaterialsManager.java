@@ -3,6 +3,7 @@ package be.heh.agentsnmp.manager;
 import be.heh.agentsnmp.manager.entities.PersistentStorage;
 import be.heh.agentsnmp.manager.entities.Processor;
 import be.heh.agentsnmp.manager.entities.VolatileStorage;
+import be.heh.agentsnmp.mib.MOIdentity;
 import be.heh.agentsnmp.mib.MOVariable;
 import be.heh.agentsnmp.mib.MibBrowser;
 import be.heh.agentsnmp.mib.entry.MOMDiskEntry;

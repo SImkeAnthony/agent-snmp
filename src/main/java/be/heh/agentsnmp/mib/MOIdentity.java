@@ -1,4 +1,4 @@
-package be.heh.agentsnmp.manager;
+package be.heh.agentsnmp.mib;
 
 import lombok.Getter;
 import lombok.Setter;

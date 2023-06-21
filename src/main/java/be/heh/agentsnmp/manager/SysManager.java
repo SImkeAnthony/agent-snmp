@@ -1,5 +1,6 @@
 package be.heh.agentsnmp.manager;
 
+import be.heh.agentsnmp.mib.MOIdentity;
 import be.heh.agentsnmp.mib.MOVariable;
 import be.heh.agentsnmp.mib.MibBrowser;
 import lombok.Getter;

@@ -1,6 +1,7 @@
 package be.heh.agentsnmp.manager;
 
 import be.heh.agentsnmp.manager.entities.Service;
+import be.heh.agentsnmp.mib.MOIdentity;
 import be.heh.agentsnmp.mib.MOVariable;
 import be.heh.agentsnmp.mib.MibBrowser;
 import be.heh.agentsnmp.mib.entry.MOServiceEntry;

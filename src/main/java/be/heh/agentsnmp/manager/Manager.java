@@ -1,5 +1,6 @@
 package be.heh.agentsnmp.manager;
 
+import be.heh.agentsnmp.mib.MOIdentity;
 import org.snmp4j.agent.mo.DefaultMOTable;
 import org.snmp4j.agent.mo.MOScalar;
 
