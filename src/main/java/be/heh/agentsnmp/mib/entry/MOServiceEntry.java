@@ -35,10 +35,10 @@ public class MOServiceEntry implements MOTableRow {
     @Override
     public Variable getValue(int column) {
         switch (column){
-            case 1:{return getIndex();}
-            case 2:{return new OctetString(getName());}
-            case 3:{return new OctetString(getDescription());}
-            case 4:{return new OctetString(getPort());}
+            case 0:{return getIndex();}
+            case 1:{return new OctetString(getName());}
+            case 2:{return new OctetString(getDescription());}
+            case 3:{return new OctetString(getPort());}
             default:{System.err.println("no column has number "+column);return null;}
         }
     }

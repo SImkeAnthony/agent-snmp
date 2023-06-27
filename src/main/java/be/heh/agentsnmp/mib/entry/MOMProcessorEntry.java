@@ -41,11 +41,11 @@ public class MOMProcessorEntry implements MOTableRow {
     @Override
     public Variable getValue(int column) {
         switch (column){
-            case 1:{return getIndex();}
-            case 2:{return new OctetString(getReference());}
-            case 3:{return new OctetString(Integer.toString(getCore()));}
-            case 4:{return new OctetString(Integer.toString(getVCore()));}
-            case 5:{return new OctetString(Double.toString(getFrequency()));}
+            case 0:{return getIndex();}
+            case 1:{return new OctetString(getReference());}
+            case 2:{return new OctetString(Integer.toString(getCore()));}
+            case 3:{return new OctetString(Integer.toString(getVCore()));}
+            case 4:{return new OctetString(Double.toString(getFrequency()));}
             default:{System.err.println("no column has number "+column);return null;}
         }
     }

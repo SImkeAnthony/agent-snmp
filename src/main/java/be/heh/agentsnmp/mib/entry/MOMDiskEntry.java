@@ -37,10 +37,10 @@ public class MOMDiskEntry implements MOTableRow {
     @Override
     public Variable getValue(int column) {
         switch (column){
-            case 1:{return getIndex();}
-            case 2:{return new OctetString(getReference());}
-            case 3:{return new OctetString(Double.toString(getAvailable()));}
-            case 4:{return new OctetString(Double.toString(getUsed()));}
+            case 0:{return getIndex();}
+            case 1:{return new OctetString(getReference());}
+            case 2:{return new OctetString(Double.toString(getAvailable()));}
+            case 3:{return new OctetString(Double.toString(getUsed()));}
             default:{System.err.println("no column has number "+column);return null;}
         }
     }

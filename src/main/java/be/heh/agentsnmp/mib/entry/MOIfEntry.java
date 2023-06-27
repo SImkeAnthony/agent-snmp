@@ -34,18 +34,17 @@ public class MOIfEntry implements MOTableRow {
 
     @Override
     public Variable getValue(int column) {
-        System.out.println("get info if at column : "+column);
         switch (column){
-            case 1:{
+            case 0:{
                 return getIndex();
             }
-            case 2:{
+            case 1:{
                 return new OctetString(getDescription());
             }
-            case 3:{
+            case 2:{
                 return new OctetString(getMacAddress());
             }
-            case 4:{
+            case 3:{
                 return new OctetString(getIpAddress());
             }
             default:{

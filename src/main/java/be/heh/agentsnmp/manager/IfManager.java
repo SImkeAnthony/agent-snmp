@@ -103,7 +103,7 @@ public class IfManager implements Manager{
                             anInterface.getIpAddress()
                     ));
                 });
-                System.out.println("test getValue if : "+table.getValue(new OID("1"),4));
+                System.out.println("test getValue if : "+table.getValue(new OID("1"),3));
             }else {
                 System.err.println("table "+table.getID().toString()+" is not supported yet");
             }

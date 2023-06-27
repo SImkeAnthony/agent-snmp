@@ -153,8 +153,8 @@ public class RequestHandler implements CommandResponder {
                     int column = Integer.parseInt(oid.split("\\.")[oid.split("\\.").length-1]);
                     if(index !=-1){
                         try{
-                            System.out.println( "found ("+index+";"+column+") => "+defaultMOTable.getValue(new OID(String.valueOf(index)),column));
-                            //variable = defaultMOTable.getValue(new OID(String.valueOf(index)),column);
+                            //System.out.println( "found ("+index+";"+(column-1)+") => "+defaultMOTable.getValue(new OID(String.valueOf(index)),column-1));
+                            variable = defaultMOTable.getValue(new OID(String.valueOf(index)),column);
                         }catch (Exception e){
                             System.err.println("Error to get variable in table : "+e.getMessage());
                         }
