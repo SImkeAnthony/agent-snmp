@@ -50,7 +50,7 @@ public class IfManager implements Manager{
     @Override
     public List<MOScalar> getMOScalars() {
         List<MOScalar> moScalars = new ArrayList<>();
-        getMoVariables().parallelStream().forEach(moVariable->{
+        getMoVariables().forEach(moVariable->{
             moScalars.add(moVariable.getMoScalar());
         });
         return moScalars;
@@ -103,6 +103,7 @@ public class IfManager implements Manager{
                             anInterface.getIpAddress()
                     ));
                 });
+                System.out.println("test getValue if : "+table.getValue(new OID("1"),4));
             }else {
                 System.err.println("table "+table.getID().toString()+" is not supported yet");
             }

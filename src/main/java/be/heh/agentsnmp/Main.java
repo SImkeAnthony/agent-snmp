@@ -1,6 +1,8 @@
 package be.heh.agentsnmp;
 
 import be.heh.agentsnmp.agent.SnmpAgent;
+import org.snmp4j.smi.Variable;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

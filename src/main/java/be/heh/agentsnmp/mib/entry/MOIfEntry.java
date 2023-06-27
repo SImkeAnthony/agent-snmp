@@ -34,6 +34,7 @@ public class MOIfEntry implements MOTableRow {
 
     @Override
     public Variable getValue(int column) {
+        System.out.println("get info if at column : "+column);
         switch (column){
             case 1:{
                 return getIndex();

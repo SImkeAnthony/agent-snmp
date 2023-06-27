@@ -126,7 +126,7 @@ public class MibBrowser {
             JSONObject mo = getJsonObject().getJSONObject(keys.next());
             if(mo.has("class")){
                 if(mo.get("class").equals("objecttype") && mo.get("nodetype").equals("column") && mo.get("oid").toString().contains(oidIdentity.toString())){
-                    System.out.println("found a column for "+oidIdentity);
+                    //System.out.println("found a column for "+oidIdentity+" : "+mo.get("name")+"/"+mo.get("oid"));
                     moMutableColumns.add(new MOMutableColumn(
                             colId,
                             getSyntax().get(mo.get("syntax").toString()),
@@ -139,4 +139,33 @@ public class MibBrowser {
         return moMutableColumns.toArray(MOMutableColumn[]::new);
     }
 
+    private String getOIDNumberOfTable(OID oidTable){
+        Iterator<String> keys = getJsonObject().keys();
+        String[] oidList = oidTable.toString().split("\\.");
+        int last = Integer.parseInt(oidList[oidList.length-1])-1;
+        oidList[oidList.length-1] = String.valueOf(last);
+        String oidNumber = String.join(".",oidList);
+        while (keys.hasNext()){
+            JSONObject mo = getJsonObject().getJSONObject(keys.next());
+            if(mo.has("class")){
+                if(mo.get("class").equals("objecttype") && mo.get("nodetype").equals("scalar") && mo.get("oid").toString().equals(oidNumber)){
+                    return mo.get("oid").toString();
+                }
+            }
+        }
+        return "0";
+    }
+
+    private String getOIDIndexOfTable(OID oidEntryTable){
+        Iterator<String> keys = getJsonObject().keys();
+        while (keys.hasNext()){
+            JSONObject mo = getJsonObject().getJSONObject(keys.next());
+            if(mo.has("class")){
+                if(mo.get("class").equals("objecttype") && mo.get("nodetype").equals("table") && mo.get("oid").toString().contains(oidEntryTable.toString()+".1")){
+                    return mo.get("oid").toString();
+                }
+            }
+        }
+        return "0";
+    }
 }

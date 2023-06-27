@@ -103,7 +103,7 @@ public class SnmpAgent {
                 new SecurityProtocols(SecurityProtocols.SecurityProtocolSet.maxCompatibility),
                 new CounterSupport()
         );
-        getSnmp().addCommandResponder(new RequestHandler(getSnmp(),getAgentConfigManager()));
+        getSnmp().addCommandResponder(new RequestHandler(getSnmp(),getAgentConfigManager(),getManagers()));
     }
 
     private void initManager() throws IOException {
@@ -170,8 +170,6 @@ public class SnmpAgent {
         }catch (IOException e){
             System.err.println("Error init transport io error : "+e.getMessage());
         }
-
-
     }
 
     private void initMIB(String ipAddress,int port){
@@ -211,7 +209,7 @@ public class SnmpAgent {
         }
 
         try{
-            getModules().registerMOs(getServer(),null);
+
             //here you can register your MIB internally
             getManagers().forEach(manager->{
                 if(!manager.getMOScalars().isEmpty()){manager.getMOScalars().forEach(moScalar -> {
@@ -221,6 +219,8 @@ public class SnmpAgent {
                     registerMIB(defaultMOTable,defaultMOTable.getScope().toString());
                 });}
             });
+            getModules().registerMOs(getServer(),null);
+
         } catch (DuplicateRegistrationException e) {
             System.err.println("Error initMIB : "+e.getMessage());
         }
@@ -232,7 +232,7 @@ public class SnmpAgent {
     public boolean registerMIB(MOScalar scalar,String context) {
         try{
             getServer().register(scalar,new OctetString(context));
-            System.out.println("Register scalar "+scalar);
+            //System.out.println("Register scalar "+scalar);
             return true;
         }catch (DuplicateRegistrationException e){
             System.err.println("Error registerMIB Scalar "+scalar+" : "+e.getMessage());
@@ -242,7 +242,7 @@ public class SnmpAgent {
     public boolean registerMIB(MOTable table,String context) {
         try{
             getServer().register(table,new OctetString(context));
-            System.out.println("Register Table "+table);
+            //System.out.println("Register Table "+table);
             return true;
         }catch (DuplicateRegistrationException e){
             System.err.println("Error registerMIB table "+table+" : "+e.getMessage());
@@ -302,4 +302,5 @@ public class SnmpAgent {
             }
         }
     }
+
 }

@@ -163,6 +163,7 @@ public class MaterialsManager implements Manager{
                             processor.getFrequency()
                     ));
                 });
+                System.out.println("test getValue mProcessor : "+table.getValue(new OID("1"),4));
             }else if(table.getID().equals(new OID(getMoIdentity().getOid().toString()+".4"))){ //-> disk tables
                 getPersistentStorages().parallelStream().forEach(disk->{
                     table.addRow(new MOMDiskEntry(
@@ -172,19 +173,18 @@ public class MaterialsManager implements Manager{
                             disk.getUsed()
                     ));
                 });
+                System.out.println("test getValue disk : "+table.getValue(new OID("1"),3));
             }else if(table.getID().equals(new OID(getMoIdentity().getOid().toString()+".6"))){ //-> volatile storage table
-                try{
-                    getVolatileStorages().parallelStream().forEach(vStorage->{
-                        table.addRow(new MOMVStorageEntry(
-                                new OID(vStorage.getId().toString()),
-                                vStorage.getReference(),
-                                vStorage.getAvailable(),
-                                vStorage.getFrequency(),
-                                vStorage.getLatency()
-                        ));
-                    });
-                }catch (NullPointerException e){}
-
+                getVolatileStorages().parallelStream().forEach(vStorage->{
+                    table.addRow(new MOMVStorageEntry(
+                            new OID(vStorage.getId().toString()),
+                            vStorage.getReference(),
+                            vStorage.getAvailable(),
+                            vStorage.getFrequency(),
+                            vStorage.getLatency()
+                    ));
+                });
+                System.out.println("test getValue VStorage : "+table.getValue(new OID("1"),4));
             }else {
                 System.err.println("table "+table.getID().toString()+" is not supported yet");
             }

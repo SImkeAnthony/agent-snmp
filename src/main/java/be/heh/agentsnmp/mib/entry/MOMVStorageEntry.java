@@ -35,7 +35,7 @@ public class MOMVStorageEntry implements MOTableRow {
 
     @Override
     public OID getIndex() {
-        return null;
+        return getOidIndex();
     }
 
     @Override
