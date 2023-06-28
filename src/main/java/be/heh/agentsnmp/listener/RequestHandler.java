@@ -54,8 +54,13 @@ public class RequestHandler implements CommandResponder {
     private Set<VariableBinding> getVariablesOIDs(PDU pdu) {
         Set<VariableBinding> variableBindings = new HashSet<>(); //use set to avoid duplicated variableBinding
         pdu.getVariableBindings().forEach(variableBinding -> {
-            if(getVariableByOid(variableBinding.getOid().format(),pdu.getVariableBindings())!=null){
-                variableBindings.add(new VariableBinding(variableBinding.getOid(),getVariableByOid(variableBinding.getOid().format(),pdu.getVariableBindings())));
+            if(variableBinding.getVariable().toString().equals("Null")){
+                //System.out.println("Variable null => found variable");
+                if(getVariableByOid(variableBinding.getOid().format(),pdu.getVariableBindings())!=null){
+                    variableBindings.add(new VariableBinding(variableBinding.getOid(),getVariableByOid(variableBinding.getOid().format(),pdu.getVariableBindings())));
+                }
+            }else {
+                variableBindings.add(variableBinding);
             }
         });
         return variableBindings;
@@ -69,7 +74,7 @@ public class RequestHandler implements CommandResponder {
         // add variables bindings (OID and value) at the response
         Set<VariableBinding> workedSet = getVariablesOIDs(event.getPDU());
         for(VariableBinding variableBinding : workedSet){
-            System.out.println("variableBinding : "+variableBinding);
+            //System.out.println("variableBinding : "+variableBinding);
             getResponsePdu().add(variableBinding);
         }
         System.out.println("Response pdu : "+getResponsePdu());
@@ -154,7 +159,7 @@ public class RequestHandler implements CommandResponder {
                     if(index !=-1){
                         try{
                             //System.out.println( "found ("+index+";"+(column-1)+") => "+defaultMOTable.getValue(new OID(String.valueOf(index)),column-1));
-                            variable = defaultMOTable.getValue(new OID(String.valueOf(index)),column);
+                            variable = defaultMOTable.getValue(new OID(String.valueOf(index)),column-1);
                         }catch (Exception e){
                             System.err.println("Error to get variable in table : "+e.getMessage());
                         }
