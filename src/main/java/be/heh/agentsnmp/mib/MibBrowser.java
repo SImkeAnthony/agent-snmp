@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.mo.*;
 import org.snmp4j.smi.OID;
-import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
 
 import java.io.File;
@@ -20,14 +19,14 @@ import java.util.*;
 public class MibBrowser {
     @Getter
     @Setter
-    File mibFile;
+    private File mibFile;
     @Getter
     @Setter
-    JSONObject jsonObject;
+    private JSONObject jsonObject;
     @Getter
-    Map<String,MOAccess> access = new HashMap();
+    private Map<String,MOAccess> access = new HashMap();
     @Getter
-    Map<String, Integer> syntax = new HashMap();
+    private Map<String, Integer> syntax = new HashMap();
 
 
     public MibBrowser(File mibFile) throws IOException {
