@@ -21,16 +21,13 @@ repositories {
 
 dependencies {
     implementation 'org.projectlombok:lombok:1.18.22'
-    //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    //testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
     //Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // Test
-    //testImplementation "org.testcontainers:junit-jupiter:1.16.0"
-    //testImplementation 'junit:junit:4.13.2'
+    // Address
+    implementation 'commons-net:commons-net:3.6'
 
     //SNMP
     implementation 'org.snmp4j:snmp4j:3.7.7'

@@ -22,11 +22,12 @@ import org.snmp4j.mp.MPv1;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.security.*;
 import org.snmp4j.smi.*;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.transport.TransportMappings;
 import org.snmp4j.util.ThreadPool;
 
 import java.io.*;
-import java.net.BindException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -133,7 +134,7 @@ public class SnmpAgent {
         System.out.println("Initialize SNMP ....");
         try{
             setSnmp(new Snmp());
-            //getSnmp().addTransportMapping(new DefaultUdpTransportMapping());
+            getSnmp().addTransportMapping(new DefaultUdpTransportMapping());
             getSnmp().setMessageDispatcher(new MessageDispatcherImpl());
             getSnmp().getMessageDispatcher().addMessageProcessingModel(new MPv1());
             getSnmp().getMessageDispatcher().addMessageProcessingModel(new MPv3());
@@ -144,14 +145,13 @@ public class SnmpAgent {
             usm.setEngineDiscoveryEnabled(true);
             SecurityModels.getInstance().addSecurityModel(usm);
 
-            getSnmp().listen();
-            System.out.println("Snmp listen ...");
         }catch (Error e){
             System.err.println("Error initialize SNMP : "+e.getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
     private void initTransport(List<String> listenAddresses,int listenPort){
         System.out.println("Initialize transport mapping ...");
         try {
@@ -167,6 +167,7 @@ public class SnmpAgent {
                 }
             }
             getSnmp().listen();
+            System.out.println("Snmp listen ...");
         }catch (IOException e){
             System.err.println("Error init transport io error : "+e.getMessage());
         }

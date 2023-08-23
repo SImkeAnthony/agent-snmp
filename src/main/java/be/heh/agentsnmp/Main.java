@@ -1,6 +1,7 @@
 package be.heh.agentsnmp;
 
 import be.heh.agentsnmp.agent.SnmpAgent;
+import be.heh.agentsnmp.tools.NetworkTool;
 import org.snmp4j.smi.Variable;
 
 import java.io.IOException;
@@ -13,11 +14,10 @@ public class Main {
         String engineBootsCounterFileName = "engineBootsCounterFile.txt";
         String configFileName = "configurator.properties";
         String configMOFileName = "configMOI.cfg";
-        List<String> listenAddresses = new ArrayList<>();
-        listenAddresses.add("127.0.0.1");
-        listenAddresses.add("192.168.1.3");
-        listenAddresses.add("192.168.0.9");
-        int listenPort = 162;
+
+        List<String> listenAddresses = new ArrayList<>(NetworkTool.getPrivateIPV4Addresses());
+
+        int listenPort = 161;
         List<String> contexts = new ArrayList<>();
         contexts.add("public");
         contexts.add("Silver-King-Rogue-16");
